@@ -2,14 +2,17 @@ import Sequelize, { Model } from 'sequelize'
 
 class User extends Model {
   static init (sequelize) {
-    super.init({
-      name: Sequelize.STRING,
-      email: Sequelize.STRING,
-      password_has: Sequelize.STRING,
-      provider: Sequelize.STRING
-    }, {
-      sequelize
-    })
+    super.init(
+      {
+        name: Sequelize.STRING,
+        email: Sequelize.STRING,
+        password_hash: Sequelize.STRING,
+        provider: Sequelize.BOOLEAN
+      },
+      {
+        sequelize
+      }
+    )
   }
 }
 
