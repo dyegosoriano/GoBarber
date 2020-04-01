@@ -13,12 +13,14 @@ class UserController {
     // Tratamento de erro de validação do Yup
     if (!(await schema.isValid(req.body))) return res.status(400).json({ error: 'Validation fails' })
 
+    // Verificão de email no baco de dados
     const userExists = await User.findOne({ where: { email: req.body.email } })
 
     if (userExists) {
       return res.status(400).json({ error: 'User already exists.' })
     }
 
+    // Salvando dados
     const { id, name, email, provider } = await User.create(req.body)
 
     return res.json({
@@ -50,20 +52,25 @@ class UserController {
 
     const { email, oldPassword } = req.body
 
+    // Buscando usuário no banco de dados
     const user = await User.findByPk(req.userId)
 
+    // Vefiricando a existência do email no banco de dados para atualização
     if (email !== user.email) {
       const userExists = await User.findOne({ where: { email } })
 
+      // Tratamento de erro
       if (userExists) {
         return res.status(400).json({ error: 'User already exists.' })
       }
     }
 
+    // Verificando se a senha é a mesma cadastrada no banco de dados
     if (oldPassword && !(await user.checkPassword(oldPassword))) {
       return res.status(401).json({ error: 'Password does not match' })
     }
 
+    // Atualizando e retornando os dados do usuário
     const { id, name, provider } = await user.update(req.body)
 
     return res.json({

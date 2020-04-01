@@ -17,16 +17,19 @@ class SessionController {
 
     const { email, password } = req.body
 
+    // Vefiricando a existência do email no banco de dados
     const user = await User.findOne({ where: { email } })
 
     if (!user) {
       return res.status(401).json({ error: 'User not found' })
     }
 
+    // Verificando se a senha é a mesma cadastrada no banco de dados
     if (!(await user.checkPassword(password))) {
       return res.status(401).json({ error: 'Password does not match' })
     }
 
+    // Retornando dados via token JWT
     const { id, name } = user
 
     return res.json({

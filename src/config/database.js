@@ -1,3 +1,4 @@
+// Configurações do bando de dados
 module.exports = {
   dialect: 'postgres',
   host: 'localhost',
