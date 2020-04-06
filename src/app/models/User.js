@@ -27,6 +27,11 @@ class User extends Model {
     return this
   }
 
+  // Relacionando model User com model File
+  static associate (models) {
+    this.belongsTo(models.File, { foreignKey: 'avatar_id' })
+  }
+
   // Método de verificação de senha
   checkPassword (password) {
     return bcrypt.compare(password, this.password_hash)
