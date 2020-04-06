@@ -52,7 +52,7 @@ class UserController {
 
     const { email, oldPassword } = req.body
 
-    // Buscando usuário no banco de dados
+    // Buscando id no banco de dados atraves do userId inserido pelo Middleware de autenticação
     const user = await User.findByPk(req.userId)
 
     // Vefiricando a existência do email no banco de dados para atualização

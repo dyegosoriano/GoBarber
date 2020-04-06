@@ -12,17 +12,14 @@ class SessionController {
       password: Yup.string().required()
     })
 
-    // Tratamento de erro de validação do Yup
-    if (!(await schema.isValid(req.body))) return res.status(400).json({ error: 'Validation fails' })
+    if (!(await schema.isValid(req.body))) res.status(400).json({ error: 'Validation fails' })
 
+    // Buscando dados da requisição
     const { email, password } = req.body
 
     // Vefiricando a existência do email no banco de dados
     const user = await User.findOne({ where: { email } })
-
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' })
-    }
+    if (!user) res.status(401).json({ error: 'User not found' })
 
     // Verificando se a senha é a mesma cadastrada no banco de dados
     if (!(await user.checkPassword(password))) {
@@ -38,6 +35,7 @@ class SessionController {
         name,
         email
       },
+      // Exportando token usando JWT
       token: jwt.sign({ id }, authConfig.secret, {
         expiresIn: authConfig.expiresIn
       })
