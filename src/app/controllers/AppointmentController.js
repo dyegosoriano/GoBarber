@@ -56,6 +56,9 @@ class AppointmentController {
   }
 
   async index (request, response) {
+    // Buscando página
+    const { page = 1 } = request.query
+
     // Listagem de agendamentos
     const appointments = await Appointment.findAll({
       where: {
@@ -65,6 +68,8 @@ class AppointmentController {
       // Ordenando os agendamentos por datas
       order: ['date'],
       attributes: ['id', 'date'],
+      limit: 20, // Limitando numero de agendamentos visiveis
+      offset: (page - 1) * 20, // Limitando numero de agendamentos visiveis
       include: [
         {
           // Incluindo os dados de usuário provider
