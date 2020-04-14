@@ -1,11 +1,11 @@
 import * as Yup from 'yup'
-import { startOfHour, parseISO, isBefore, format } from 'date-fns'
+import { startOfHour, parseISO, isBefore, format, subHours } from 'date-fns'
 import pt from 'date-fns/locale/pt'
 
-import Appointment from '../models/Appointments'
+import Appointment from '../models/Appointment'
+import Notification from '../schemas/Notification'
 import User from '../models/User'
 import File from '../models/File'
-import Notification from '../schemas/Notification'
 
 class AppointmentController {
   async store (request, response) {
@@ -20,6 +20,12 @@ class AppointmentController {
     }
 
     const { provider_id, date } = request.body
+
+    // Verificando se o usuário esta tentando marcar um horário com ele mesmo
+    if (request.userId === provider_id) {
+      return response.status(400).json({ error: 'The user cannot make an appointment with himself' })
+    }
+
     // Verificando se o provider_id e de um provider
     const isProvider = await User.findOne({
       where: { id: provider_id, provider: true }
@@ -103,6 +109,28 @@ class AppointmentController {
     })
 
     return response.json(appointments)
+  }
+
+  async delete (request, response) {
+    const appointment = await Appointment.findByPk(request.params.id)
+
+    // Validando se o usuário tem mesmo permissão para deletar o agendamento
+    if (appointment.user_id !== request.userId) {
+      return response.status(401).json({ error: "You don't have permission to cancel this appointment" })
+    }
+
+    // Regra que impossibilita o cancelamento do agendamento com limite de 2h antes
+    const dateWithSub = subHours(appointment.date, 2)
+
+    if (isBefore(dateWithSub, new Date())) {
+      return response.status(401).json({ error: 'You can only cancel appointments 2 hours in advance.' })
+    }
+
+    // Adicionando data e horario de cancelamento
+    appointment.canceled_at = new Date()
+    await appointment.save()
+
+    return response.json(appointment)
   }
 }
 
