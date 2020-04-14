@@ -3,7 +3,7 @@
 import { startOfDay, endOfDay, parseISO } from 'date-fns'
 import { Op } from 'sequelize'
 
-import Appointment from '../models/Appointments'
+import Appointment from '../models/Appointment'
 import User from '../models/User'
 
 class ScheduleController {
