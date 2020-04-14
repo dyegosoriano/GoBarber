@@ -7,6 +7,8 @@ import Notification from '../schemas/Notification'
 import User from '../models/User'
 import File from '../models/File'
 
+import Mail from '../../lib/Mail'
+
 class AppointmentController {
   async store (request, response) {
     // Validando campos de entrada com Yup
@@ -112,7 +114,15 @@ class AppointmentController {
   }
 
   async delete (request, response) {
-    const appointment = await Appointment.findByPk(request.params.id)
+    const appointment = await Appointment.findByPk(request.params.id, {
+      include: [
+        {
+          model: User,
+          as: 'provider',
+          attributes: ['name', 'email']
+        }
+      ]
+    })
 
     // Validando se o usuário tem mesmo permissão para deletar o agendamento
     if (appointment.user_id !== request.userId) {
@@ -129,6 +139,12 @@ class AppointmentController {
     // Adicionando data e horario de cancelamento
     appointment.canceled_at = new Date()
     await appointment.save()
+
+    await Mail.sendMail({
+      to: `${appointment.provider.name} <${appointment.provider.email}`,
+      subject: 'Agendamento cancelado',
+      text: 'Você tem um novo cancelamento'
+    })
 
     return response.json(appointment)
   }
