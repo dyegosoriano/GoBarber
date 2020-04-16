@@ -91,7 +91,7 @@ class AppointmentController {
       },
       // Ordenando os agendamentos por datas
       order: ['date'],
-      attributes: ['id', 'date'],
+      attributes: ['id', 'date', 'past', 'cancelable'],
       limit: 20, // Limitando numero de agendamentos visiveis
       offset: (page - 1) * 20, // Limitando numero de agendamentos visiveis
       include: [
