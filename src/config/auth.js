@@ -1,5 +1,5 @@
 // Configurações de autenticação JWT
 export default {
-  secret: 'insiraSeuTokenAqui',
+  secret: process.env.APP_SECRET,
   expiresIn: '7d'
 }
