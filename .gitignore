@@ -1,6 +1,7 @@
 node_modules/
 tmp/uploads/*
 
+.env
 yarn.lock
 
 .DS_Store
